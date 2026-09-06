@@ -59,7 +59,7 @@ begin
   io_richEdit.SelLength               := 0;
 end;
 
-{Events}
+{Actions}
 
 procedure highlightTextInRichEdit(io_source : TRichEdit; i_pattern : string);
 var

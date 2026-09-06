@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls, System.RegularExpressions;
 
 type
-  TACPD = class(TForm)
+  TASPD = class(TForm)
     lblMessage: TLabel;
     lblRegex: TLabel;
     edRegex: TEdit;
@@ -25,13 +25,11 @@ type
   end;
 
 var
-  ACPD: TACPD;
+  ASPD: TASPD;
 
 implementation
 
 {$R *.dfm}
-
-{functions and procedures}
 
 function IsValidRegex(const i_pattern: string; const i_text: string): Boolean;
 var 
@@ -40,8 +38,9 @@ var
 begin
   try
      lregex := TRegEx.Create(i_pattern);
-     lMatch := lregex.Match(i_text);     
-     Result := True;
+     //lMatch := lregex.Match(i_text);     
+     //Result := True;
+     Result := lregex.IsMatch(i_text);
   except
      on E: Exception  do
      begin
@@ -59,8 +58,6 @@ begin
   io_richEdit.SelLength               := 0;
 end;
 
-{Events}
-
 procedure highlightTextInRichEdit(io_source : TRichEdit; i_pattern : string);
 var
   lregex : TRegEx;
@@ -73,11 +70,14 @@ begin
   begin
     lOldStart  := io_source.SelStart;
     lOldLenght := io_source.SelLength;
+
+
     
     lregex := TRegEx.Create(i_pattern);
     lValidRegex := lregex.IsMatch(io_source.Text);
     
     lMatch := lregex.Match(io_source.Text);
+
     
     ClearHighLight(io_source);
     
@@ -95,14 +95,14 @@ begin
   
 end;
 
-procedure TACPD.btnTestClick(Sender: TObject);
+procedure TASPD.btnTestClick(Sender: TObject);
 begin
 
   highlightTextInRichEdit(reMessage, edRegex.Text);
   
 end;
 
-procedure TACPD.edRegexOnChange(Sender: TObject);
+procedure TASPD.edRegexOnChange(Sender: TObject);
 begin
   vRegex := edRegex.Text;
 
@@ -110,7 +110,7 @@ begin
   highlightTextInRichEdit(reMessage, vRegex);
 end;
 
-procedure TACPD.reMessageOnChange(Sender: TObject);
+procedure TASPD.reMessageOnChange(Sender: TObject);
 begin
   vMessage := reMessage.Text;
 end;
