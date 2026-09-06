@@ -1,0 +1,104 @@
+unit ArcSight_SmartConnector_Parser_Designer;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls, System.RegularExpressions;
+
+type
+  TASPD = class(TForm)
+    lblMessage: TLabel;
+    lblRegex: TLabel;
+    edRegex: TEdit;
+    GroupBox1: TGroupBox;
+    reMessage: TRichEdit;
+    btnTest: TButton;
+    procedure reMessageOnChange(Sender: TObject);
+    procedure edRegexOnChange(Sender: TObject);
+    procedure btnTestClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    vRegex   : string;
+    vMessage : string;
+  end;
+
+var
+  ASPD: TASPD;
+
+implementation
+
+{$R *.dfm}
+
+procedure ClearHighLight (io_richEdit : TRichEdit);
+begin
+  io_richEdit.SelectAll;
+  io_richEdit.SelAttributes.BackColor := clWindow;
+  io_richEdit.SelAttributes.Color     := clWindowText;
+  io_richEdit.SelStart                := 0;
+  io_richEdit.SelLength               := 0;
+end;
+
+procedure highlightTextInRichEdit(io_source : TRichEdit; i_pattern : string);
+var
+  lregex : TRegEx;
+  lMatch : TMatch;
+  lOldStart, lOldLenght : Integer;
+begin
+
+  if (i_pattern <> '') then
+  begin
+    lOldStart  := io_source.SelStart;
+    lOldLenght := io_source.SelLength;
+
+    lregex := TRegEx.Create(i_pattern);
+    lMatch := lregex.Match(io_source.Text);
+
+    ClearHighLight(io_source);
+    
+ (*   while lMatch.Success do
+    begin
+      io_source.SelStart := lMatch.Index - 1;
+      io_source.SelLength := lMatch.Length;
+
+      io_source.SelAttributes.BackColor := clYellow;
+      io_source.SelAttributes.Color := clBlack;
+
+      lMatch := lMatch.NextMatch;
+    end; *)
+
+    if lMatch.Success then
+    begin
+      io_source.SelStart := lMatch.Index - 1;
+      io_source.SelLength := lMatch.Length;
+      io_source.SelAttributes.BackColor := clYellow;
+    end;
+
+    io_source.SelStart  := lOldStart;
+    io_source.SelLength := lOldLenght;
+
+  end;
+end;
+
+procedure TASPD.btnTestClick(Sender: TObject);
+begin
+
+  highlightTextInRichEdit(reMessage, edRegex.Text);
+  
+end;
+
+procedure TASPD.edRegexOnChange(Sender: TObject);
+begin
+  vRegex := edRegex.Text;
+
+  ClearHighLight(reMessage);
+  highlightTextInRichEdit(reMessage, vRegex);
+end;
+
+procedure TASPD.reMessageOnChange(Sender: TObject);
+begin
+  vMessage := reMessage.Text;
+end;
+
+end.
